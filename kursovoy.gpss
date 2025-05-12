@@ -1,0 +1,36 @@
+*****************************************************************************
+***************Моделирование двухканальной кластерной системы с адаптивной диспетчеризацией
+*****************************************************************************
+***Модуль 0. Раздел описания***
+****блок таблиц
+to_1 QTABLE ocheredOne,0,4,10
+to_2 QTABLE ocheredTwo,0,4,10
+T_U TABLE M1,5,5,10
+T_M TABLE M1,5,5,10
+***Модуль 1. Описания для очереди и узла 1***
+GENERATE (Exponential(1, 0, 10))
+ASSIGN id,1
+
+T_1 TEST L Q$ocheredOne,Q$ocheredTwo,Q_2
+TEST E P$id,1,Q_2
+Q_1 QUEUE ocheredOne
+SEIZE UzelOne
+DEPART ocheredOne
+ADVANCE (Exponential(2, 0, 4))
+RELEASE UzelOne
+TABULATE T_U
+TRANSFER,Term_met
+***Модуль 2. Описания для очереди и узла 2***
+GENERATE (Exponential(3, 0, 9))
+ASSIGN id,2
+TRANSFER,T_1
+
+Q_2 QUEUE ocheredTwo
+SEIZE UzelTwo
+DEPART ocheredTwo
+ADVANCE (Exponential(4, 0, 7))
+RELEASE UzelTwo
+TABULATE T_M
+***Модуль 3. Выход заявки из СМО***
+Term_met TERMINATE 1
+START 50000
